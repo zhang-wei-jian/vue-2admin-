@@ -1,24 +1,33 @@
-# v2admin
+# my_at_guli
 
-## Project setup
-```
-yarn install
-```
+## 项目初始化
 
-### Compiles and hot-reloads for development
 ```
-yarn serve
+npm install
 ```
 
-### Compiles and minifies for production
+### 编译并热重载以进行开发
+
 ```
-yarn build
+npm run serve
 ```
 
-### Lints and fixes files
+### 编译并压缩用于生产
+
 ```
-yarn lint
+npm run build
 ```
 
-### Customize configuration
+### 检查并修复文件
+
+```
+npm run lint
+
+```
+
+### 自定义配置
+
 See [Configuration Reference](https://cli.vuejs.org/config/).
+参见配置参考。
+
+我是张伟健
