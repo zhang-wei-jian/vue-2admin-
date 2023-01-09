@@ -183,6 +183,7 @@ export default {
       if(res.status===200){
 
        this.tmForm.tmName =  res.data.hitokoto +'数据来源:'+ res.data.from
+       this.tmForm.logoUrl = 'https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg'
       
       this.addOrEdit()
       this.$message.success('数据添加成功来源：'+  res.data.from)
