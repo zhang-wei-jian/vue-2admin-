@@ -4,9 +4,10 @@
       <el-button icon="el-icon-plus" type="primary" @click="showDialog"
         >添加</el-button
       >
-      <el-button icon="el-icon-plus" type="primary" @click="getYiYan"
-        >一键添加</el-button
+      <el-button icon="el-icon-plus" type="success" @click="getYiYan"
+        >添加过载</el-button
       >
+  
     </div>
 
     <el-table :data="tmList" border style="width: 100%; margin-bottom: 20px">
@@ -31,8 +32,11 @@
             @click="editTm(row)"
             >修改</el-button
           >
-          <el-button type="danger" size="mini" icon="el-icon-delete"
-          @click="DeleteTm(row)"
+          <el-button
+            type="danger"
+            size="mini"
+            icon="el-icon-delete"
+            @click="DeleteTm(row)"
             >删除</el-button
           >
         </template>
@@ -50,7 +54,11 @@
     >
     </el-pagination>
 
-    <el-dialog title="添加品牌" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="`${this.tmForm ? '修改' : '添加'} 品牌`"
+      :visible.sync="dialogFormVisible"
+    >
+      <!-- <el-dialog :title="(tmForm.id ? '修改': '添加')+'品牌'" :visible.sync="dialogFormVisible"> -->
       <el-form :model="tmForm">
         <el-form-item label="品牌名称" label-width="100px">
           <el-input v-model="tmForm.tmName" autocomplete="off"></el-input>
@@ -74,11 +82,20 @@
         <el-button type="primary" @click="addOrEdit">确 定</el-button>
       </div>
     </el-dialog>
+   <el-card style="margin-top:30px">
+    <el-button icon="el-icon-plus" type="danger" @click="getOpenAi"
+    >openAi</el-button
+  >
+  <el-input @change="getOpenAi" v-model="prompt"></el-input>
+  <h3 v-if="text">{{text}}</h3>
+  <h3 v-else>告诉我</h3>
+   </el-card>
+
   </el-card>
 </template>
 
 <script>
-import { reqYiYan } from '@/api';
+import { reqOpenAi, reqYiYan,reqTmList, reqAddOrEdit } from "@/api";
 import { mapState } from "vuex";
 export default {
   name: "Trademark",
@@ -92,6 +109,8 @@ export default {
         logoUrl: "",
         // logoUrl: "http://47.93.148.192:8080/group1/M00/08/D4/rBHu8mO8KP2AJa7JAAbc-T-Nt24468.jpg",
       },
+      prompt:'',
+      text:''
     };
   },
   computed: {
@@ -150,7 +169,7 @@ export default {
       this.getTmList();
     },
     //添加按钮 并且清空表单
-    showDialog(res) {
+    showDialog() {
       this.tmForm = {
         logoUrl: "",
         tmName: "",
@@ -165,46 +184,104 @@ export default {
       // this.addOrEdit()
     },
     //删除按钮
-    async DeleteTm(row){
-      let res
-     try {
-      
-      res= await this.$store.dispatch('trademark/getDeleteTm',row.id)
-     } catch (error) {
-      this.$message.error("删除失败");
-     }
-      this.$message.warning("删除成功"+res);
-      this.getTmList()
-    },
-    //获取一言
-   async getYiYan(){
-      const res  = await reqYiYan()
-      console.log(res);
-      if(res.status===200){
-
-       this.tmForm.tmName =  res.data.hitokoto +'数据来源:'+ res.data.from
-       this.tmForm.logoUrl = 'https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg'
-      
-      this.addOrEdit()
-      this.$message.success('数据添加成功来源：'+  res.data.from)
+    async DeleteTm(row) {
+  
+      try {
+      await this.$store.dispatch("trademark/getDeleteTm", row.id);
+      } catch (error) {
+        this.$message.error("删除失败!");
       }
-      
+      this.$message.warning("删除成功" + row.tmName);
+      if(this.tmList.length===1) this.page--
+      this.getTmList();
     },
+
     //确定按钮   用表单收集添加数据
-   async  addOrEdit() {
-     try {
-      await  this.$store.dispatch("trademark/getAddOrEdit", this.tmForm);
-     } catch (error) {
-      this.$message.success("数据请求修改或删除失败");
-     }
+    async addOrEdit(Ai) {
+      if(Ai){
+        this.$store.dispatch("trademark/getAddOrEdit", {
+        ...Ai,
+      });
+      }
+      try {
+        await this.$store.dispatch("trademark/getAddOrEdit", this.tmForm);
+        this.$message.success("成功老哥√");
+      } catch (error) {
+        this.$message.success("数据请求修改或删除失败");
+      }
       // this.$store.dispatch("trademark/getAddOrEdit", {
       //   ...this.tmForm,
       // });
       this.dialogFormVisible = false;
-      this.$message.success("成功老哥√");
+
       this.getTmList();
     },
+    //获取一言
+    async getYiYan() {
+      const res = await reqYiYan();
+      // console.log(res);
+      if (res.status === 200) {
+        this.tmForm.tmName = res.data.hitokoto + "数据来源:" + res.data.from;
+        this.tmForm.logoUrl =
+          "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg";
+
+        this.addOrEdit();
+        // this.$message.success('数据添加成功来源：'+  res.data.from)
+        this.$notify({
+          title: "成功",
+          message: "数据添加成功来源：" + res.data.from,
+          type: "success",
+        });
+      }
+    },
+    //请求ai
+    async getOpenAi(){
+      this.text = '正在往死里加载ing...'
+const res= await reqOpenAi(this.prompt)
+// console.log(res);
+      if(res.status===200){
+        console.log(res.data.choices[0].text);
+        this.text = res.data.choices[0].text
+      }
+      // this.prompt=''
+    
+      
+    }
   },
+  watch:{
+  
+    async total(){
+    
+        let res
+      // logoUrl: "http://47.93.148.192:8080/group1/M00/08/D4/rBHu8mO8KP2AJa7JAAbc-T-Nt24468.jpg",
+      // console.log('gggg',this.total);
+      res=await reqTmList(Math.ceil(this.total/9),9)//请求9页的All条数据
+      const index = res.data.records.length-1//下标
+   
+      // console.log(res.data.records,res.data.records.length-1);
+      console.log(res.data.records[index].tmName,res.data.records[index].logoUrl);
+      const resAi= await reqOpenAi(res.data.records[index].tmName)
+      const formAi = {
+        tmName: resAi.data.choices[0].text,
+        logoUrl: "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg",
+      }
+      reqAddOrEdit(formAi)
+      // if(!res.data.records[index].logoUrl== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
+      //   //那最后一条数据判断
+      //   console.log('是ai需要回复的');
+        
+      //   const resAi= await reqOpenAi(res.data.records[index].tmName)
+        
+      // }
+     
+ 
+    }
+   
+    
+     
+    
+    
+  }
 };
 </script>
 
