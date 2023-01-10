@@ -198,11 +198,11 @@ export default {
 
     //确定按钮   用表单收集添加数据
     async addOrEdit(Ai) {
-      if(Ai){
-        this.$store.dispatch("trademark/getAddOrEdit", {
-        ...Ai,
-      });
-      }
+      // if(Ai){
+      //   this.$store.dispatch("trademark/getAddOrEdit", {
+      //   ...Ai,
+      // });
+      // }
       try {
         await this.$store.dispatch("trademark/getAddOrEdit", this.tmForm);
         this.$message.success("成功老哥√");
@@ -248,40 +248,40 @@ const res= await reqOpenAi(this.prompt)
       
     }
   },
-  watch:{
+  // watch:{
   
-    async total(){
+  //   async total(){
     
-        let res
-      // logoUrl: "http://47.93.148.192:8080/group1/M00/08/D4/rBHu8mO8KP2AJa7JAAbc-T-Nt24468.jpg",
-      // console.log('gggg',this.total);
-      res=await reqTmList(Math.ceil(this.total/9),9)//请求9页的All条数据
-      const index = res.data.records.length-1//下标
+  //       let res
+  //     // logoUrl: "http://47.93.148.192:8080/group1/M00/08/D4/rBHu8mO8KP2AJa7JAAbc-T-Nt24468.jpg",
+  //     // console.log('gggg',this.total);
+  //     res=await reqTmList(Math.ceil(this.total/9),9)//请求9页的All条数据
+  //     const index = res.data.records.length-1//下标
    
-      // console.log(res.data.records,res.data.records.length-1);
-      console.log(res.data.records[index].tmName,res.data.records[index].logoUrl);
-      const resAi= await reqOpenAi(res.data.records[index].tmName)
-      const formAi = {
-        tmName: resAi.data.choices[0].text,
-        logoUrl: "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg",
-      }
-      reqAddOrEdit(formAi)
-      // if(!res.data.records[index].logoUrl== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
-      //   //那最后一条数据判断
-      //   console.log('是ai需要回复的');
+  //     // console.log(res.data.records,res.data.records.length-1);
+  //     console.log(res.data.records[index].tmName,res.data.records[index].logoUrl);
+  //     const resAi= await reqOpenAi(res.data.records[index].tmName)
+  //     const formAi = {
+  //       tmName: resAi.data.choices[0].text,
+  //       logoUrl: "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg",
+  //     }
+  //     reqAddOrEdit(formAi)
+  //     // if(!res.data.records[index].logoUrl== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
+  //     //   //那最后一条数据判断
+  //     //   console.log('是ai需要回复的');
         
-      //   const resAi= await reqOpenAi(res.data.records[index].tmName)
+  //     //   const resAi= await reqOpenAi(res.data.records[index].tmName)
         
-      // }
+  //     // }
      
  
-    }
+  //   }
    
     
      
     
     
-  }
+  // }
 };
 </script>
 
