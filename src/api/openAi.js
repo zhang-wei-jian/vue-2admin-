@@ -21,7 +21,8 @@ openAi.interceptors.request.use(function (config) {
   // 请求成功执行的回调函数
   // config 这是包含这次请求所有相关信息的一个对象(请求报文)
   // console.log(config,'config')
-  config.headers.Authorization = `Bearer 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`;
+  // config.headers.Authorization = `Bearer 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`;
+  config.headers.Authorization = `Bearer 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`;
 
   // 开启进度条
   nprogress.start();

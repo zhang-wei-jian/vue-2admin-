@@ -38,17 +38,57 @@ export const reqYiYan = () => {
   });
 };
 const apiKey = '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';
+// export const reqOpenAi = (prompt) => {
+//   return openAi.post(
+//     // 'https://api.openai.com/v1/engines/davinci-codex/completions',
+//     'https://api.openai.com/v1/completions',
+//     {
+//       // prompt: 'What is the capital of China?',
+//       // engine: 'davinci-codex',
+//       // temperature: 0.7
+//       model: 'text-davinci-003',
+//       prompt: String(prompt),
+//       max_tokens: 150,
+//       // temperature: 0,
+//       // top_p: 1,
+//       // n: 1,
+//       // stream: true,
+//       // logprobs: null,
+//       // stop: '\n',
+//     },
+//     // { headers: { Authorization: `Bearer ${apiKey}` } }
+//   );
+// };
 export const reqOpenAi = (prompt) => {
-  return openAi.post(
-    // 'https://api.openai.com/v1/engines/davinci-codex/completions',
-    'https://api.openai.com/v1/completions',
-    {
+  // return openAi.post(
+  //   // 'https://api.openai.com/v1/engines/davinci-codex/completions',
+  //   'https://api.openai.com/v1/completions',
+  //   {
+  //     // prompt: 'What is the capital of China?',
+  //     // engine: 'davinci-codex',
+  //     // temperature: 0.7
+  //     model: 'text-davinci-003',
+  //     prompt: String(prompt),
+  //     max_tokens: 150,
+  //     // temperature: 0,
+  //     // top_p: 1,
+  //     // n: 1,
+  //     // stream: true,
+  //     // logprobs: null,
+  //     // stop: '\n',
+  //   },
+  //   // { headers: { Authorization: `Bearer ${apiKey}` } }
+  // );
+  return openAi({
+    url:'https://api.openai.com/v1/completions',
+    method:'post',
+    data:{
       // prompt: 'What is the capital of China?',
       // engine: 'davinci-codex',
       // temperature: 0.7
       model: 'text-davinci-003',
       prompt: String(prompt),
-      max_tokens: 150,
+      max_tokens: 120,
       // temperature: 0,
       // top_p: 1,
       // n: 1,
@@ -56,7 +96,6 @@ export const reqOpenAi = (prompt) => {
       // logprobs: null,
       // stop: '\n',
     },
-    // { headers: { Authorization: `Bearer ${apiKey}` } }
-  );
+  })
 };
-///admin/product/baseTrademark/remove/{id}
+

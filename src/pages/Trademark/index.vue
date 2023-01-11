@@ -7,7 +7,11 @@
       <el-button icon="el-icon-plus" type="success" @click="getYiYan"
         >添加过载</el-button
       >
-  
+      <!-- <el-switch
+  v-model="value1"
+  active-text="开启"
+  inactive-text="关闭">
+</el-switch> -->
     </div>
 
     <el-table :data="tmList" border style="width: 100%; margin-bottom: 20px">
@@ -120,12 +124,16 @@ export default {
     }),
   },
   mounted() {
-    this.getTmList();
+    setInterval(() => {
+      this.getTmList();
+    }, 8888);
   },
   methods: {
     //获取列表
     async getTmList(page, limit) {
       try {
+        // console.log(this.page,this.limit);
+        
         await this.$store.dispatch("trademark/getTmList", {
           page: this.page,
           limit: this.limit,
@@ -197,11 +205,14 @@ export default {
     },
 
     //确定按钮   用表单收集添加数据
-    async addOrEdit(Ai) {
-      // if(Ai){
+    async addOrEdit() {
+      // if(Ai.logoUrl ==
+      //     "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
       //   this.$store.dispatch("trademark/getAddOrEdit", {
       //   ...Ai,
       // });
+      // // this.getTmList();
+      
       // }
       try {
         await this.$store.dispatch("trademark/getAddOrEdit", this.tmForm);
@@ -248,40 +259,48 @@ const res= await reqOpenAi(this.prompt)
       
     }
   },
-  // watch:{
-  
-  //   async total(){
+  watch:{
+  //监视总条数的变化，新增了内容就去判断
+     total:{
+      async handler(){
+        
+        let res
+        let resAi
+      res=await reqTmList(Math.ceil(this.total/9),9)//请求最后一页9条的All条数据
+      const index = res.data.records.length-1//数组最后一项的下标
+      const lastItem = res.data.records[index] //最后一项的对象
+     
+      console.log('最后这条信息叫做'+lastItem.tmName,lastItem.logoUrl);
+      // console.log('这条信息是不是ai的'+lastItem.logoUrl!== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg");
+      
+      if(lastItem.logoUrl!== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
+        //那最后一条数据判断
+        // console.log('是ai需要回复的');
+        
+         resAi= await reqOpenAi(res.data.records[index].tmName)
+        
+      }
     
-  //       let res
-  //     // logoUrl: "http://47.93.148.192:8080/group1/M00/08/D4/rBHu8mO8KP2AJa7JAAbc-T-Nt24468.jpg",
-  //     // console.log('gggg',this.total);
-  //     res=await reqTmList(Math.ceil(this.total/9),9)//请求9页的All条数据
-  //     const index = res.data.records.length-1//下标
-   
-  //     // console.log(res.data.records,res.data.records.length-1);
-  //     console.log(res.data.records[index].tmName,res.data.records[index].logoUrl);
-  //     const resAi= await reqOpenAi(res.data.records[index].tmName)
-  //     const formAi = {
-  //       tmName: resAi.data.choices[0].text,
-  //       logoUrl: "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg",
-  //     }
-  //     reqAddOrEdit(formAi)
-  //     // if(!res.data.records[index].logoUrl== "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg"){
-  //     //   //那最后一条数据判断
-  //     //   console.log('是ai需要回复的');
-        
-  //     //   const resAi= await reqOpenAi(res.data.records[index].tmName)
-        
-  //     // }
+      let formAi = {
+        //AI要发送的内容
+        tmName: resAi.data.choices[0].text,
+        logoUrl: "https://img14.360buyimg.com/imgzone/jfs/t1/192652/19/14856/63499/60fd4dc5E9291a436/9128ae617a10ebb7.jpg",
+      }
+      //  reqAddOrEdit(formAi)   //发送
+       this.$store.dispatch("trademark/getAddOrEdit", formAi);
+       formAi=null
      
  
-  //   }
+    
+      },
+      immediate:true
+    }
    
     
      
     
     
-  // }
+  }
 };
 </script>
 
